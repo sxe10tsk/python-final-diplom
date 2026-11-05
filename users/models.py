@@ -58,7 +58,6 @@ class User(AbstractUser):
         return self.email
 
 class Contact(models.Model):
-	"""Контактные данные пользователя"""
 	user = models.ForeignKey(
 		User,
 		on_delete=models.CASCADE,
