@@ -29,6 +29,7 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = (AllowAny,)
     def perform_create(self, serializer):
+        #Вызываем после serializer.save(), отправляем письмо только после создания пользователя
         user = serializer.save()
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = email_confirmation_token.make_token(user)
@@ -61,6 +62,7 @@ class RegisterConfirmView(APIView):
 
         if not email_confirmation_token.check_token(user, token):
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+        #Токен одноразовый перестает совпадать после активации is_active=True
         user.is_active = True
         user.save(update_fields=['is_active'])
         return Response({'detail': 'Успешное подтверждение'}, status=status.HTTP_200_OK)

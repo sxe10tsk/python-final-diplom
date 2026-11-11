@@ -12,6 +12,7 @@ from users.models import Contact
 from .models import Order, OrderItem
 from .serializers import OrderSerializer, ShopOrderSerializer
 from .emails import send_order_confirmation, send_order_to_warehouse, send_order_status_change
+from users.permissions import IsShopOwner
 
 
 class OrderViewSet(viewsets.GenericViewSet):
@@ -62,7 +63,7 @@ class OrderViewSet(viewsets.GenericViewSet):
 					{'detail': f'«{pi.product.name}»: на складе только {pi.quantity} шт.'},
 					status=status.HTTP_400_BAD_REQUEST
 				)
-
+		#Письма вне transaction.atomic, чтобы не откатывать заказ при ошибке отправки письма
 		with transaction.atomic():
 			order = Order.objects.create(user=request.user, contact=contact)
 			for item in items:
@@ -71,7 +72,7 @@ class OrderViewSet(viewsets.GenericViewSet):
 					order=order,
 					product_info=pi,
 					quantity=pi.quantity,
-					price=pi.price,
+					price=pi.price,      #Фиксация цены на момент заказа
 					shop=pi.shop,)
 				pi.quantity -= item.quantity
 				pi.save(update_fields=['quantity'])
@@ -85,25 +86,14 @@ class OrderViewSet(viewsets.GenericViewSet):
 	def update_status(self, request, pk=None):
 		order = self.get_object()
 		new_status = request.data.get('status')
-		if new_status not in Order.Status.values:
+		if new_status not in Order.Status.values: #новый статус может быть только из существующего списка
 			return Response({'status': ['Неверный статус']}, status=status.HTTP_400_BAD_REQUEST)
+		if new_status not in (Order.Status.CANCELED, Order.Status.NEW):
+			return Response({'status': ['Клиент может только отменить заказ']}, status=403)
 		order.status = new_status
 		order.save(update_fields=['status', 'updated_at'])
 		send_order_status_change(order)
 		return Response(OrderSerializer(order, context={'request': request}).data, status=status.HTTP_200_OK)
-
-
-class IsShopOwner(IsAuthenticated):
-	def has_permission(self, request, view):
-		if not super().has_permission(request, view):
-			return False
-		if request.user.user_type != 'shop':
-			return False
-		try:
-			request.user.shop
-		except Exception:
-			return False
-		return True
 
 
 class ShopOrderViewSet(viewsets.GenericViewSet):
@@ -123,6 +113,16 @@ class ShopOrderViewSet(viewsets.GenericViewSet):
 		qs = self.get_queryset()
 		serializer = ShopOrderSerializer(qs, many=True, context={'request': request})
 		return Response(serializer.data)
+	@action(detail=True, methods=['patch'], url_path='status')
+	def update_status(self, request, pk=None):
+		order = self.get_object()
+		new_status = request.data.get('status')
+		if new_status not in Order.Status.values:
+			return Response({'status': ['Неверный статус']}, status=400)
+		order.status = new_status
+		order.save(update_fields=['status', 'updated_at'])
+		send_order_status_change(order)
+		return Response(ShopOrderSerializer(order, context={'request': request}).data)
 
 class ShopStateView(APIView):
 	permission_classes = [IsShopOwner]

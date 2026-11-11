@@ -22,7 +22,7 @@ class ProductParameterSerializer(serializers.ModelSerializer):
 
 
 class ProductInfoSerializer(serializers.ModelSerializer):
-	shop = ShopSerializer(read_only=True)
+	shop = ShopSerializer(read_only=True) #не даем редактировать через API
 	parameters = ProductParameterSerializer(many=True, read_only=True)
 	class Meta:
 		model = ProductInfo
@@ -33,6 +33,7 @@ class ProductInfoSerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
+	#Кратко для списка
 	category = CategorySerializer(read_only=True)
 
 	class Meta:
@@ -41,8 +42,16 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
+	#Детализировано для одного продукта
 	category = CategorySerializer(read_only=True)
 	product_infos = ProductInfoSerializer(many=True, read_only=True)
 	class Meta:
 		model = Product
 		fields = ('id', 'name', 'category', 'description', 'image', 'product_infos')
+
+class ShopUpdateSerializer(serializers.Serializer):
+	detail = serializers.CharField()
+	shop = serializers.CharField()
+	created = serializers.IntegerField()
+	updated = serializers.IntegerField()
+	skipped = serializers.IntegerField()

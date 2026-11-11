@@ -33,8 +33,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 		validated_data.pop('password_confirmation')
 		password = validated_data.pop('password')
 		user = User(**validated_data)
-		user.set_password(password)
-		user.is_active = False
+		user.set_password(password) #хешируем пароль
+		user.is_active = False #поумолчании до подтверждения email
 		user.save()
 		return user
 
@@ -45,7 +45,7 @@ class LoginSerializer(serializers.Serializer):
 	def validate(self, attrs):
 		user = authenticate(
 			request=self.context.get('request'),
-			username=attrs['email'],
+			username=attrs['email'], #для валидации по email а не username
 			password=attrs['password'],
 		)
 
@@ -92,6 +92,8 @@ class ContactSerializer(serializers.ModelSerializer):
 		read_only_fields = ('id',)
 
 	def validate(self, attrs):
+		#адрес по умолчании может быть только один, если в запросе is_default=True
+		#старый адрес перестанет быть адресом по умолчании
 		if attrs.get('is_default_adress'):
 			request = self.context.get('request')
 			if request and request.user:

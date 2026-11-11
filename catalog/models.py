@@ -32,6 +32,9 @@ class Category(models.Model):
 		return self.name
 
 class Product(models.Model):
+	"""
+	Карточка товара НЕ привязанная к магазину, так как один товар может продаваться в нескольких магазинах
+	"""
 	name = models.CharField('Наименование', max_length=255)
 	category = models.ForeignKey(
 		Category,
@@ -49,6 +52,9 @@ class Product(models.Model):
 		return self.name
 
 class ProductInfo(models.Model):
+	"""
+	Информация о товаре конкретного магазина: Цена, остаток, артикул у поставщика
+	"""
 	product = models.ForeignKey(
 		Product,
 		on_delete=models.CASCADE,
@@ -78,6 +84,9 @@ class ProductInfo(models.Model):
 		return f'{self.product.name} - {self.shop.name} {self.price} руб.'
 
 class ProductParameter(models.Model):
+	"""
+	Разные магазины могут указываать разные характеристики в рамках своего предложения
+	"""
 	product_info = models.ForeignKey(
 		ProductInfo,
 		on_delete=models.CASCADE,

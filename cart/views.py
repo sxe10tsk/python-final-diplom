@@ -18,6 +18,7 @@ class CartViewSet(viewsets.GenericViewSet):
 			'items__product_info__parameters',
 		)
 	def _get_cart(self):
+		# Первый запрос GET/POST /cart автоматически создаст корзину
 		cart, _ = Cart.objects.get_or_create(user=self.request.user)
 		return cart
 	def list(self, request):
@@ -30,15 +31,20 @@ class CartViewSet(viewsets.GenericViewSet):
 		serializer.is_valid(raise_exception=True)
 		product_info = serializer.validated_data['product_info']
 		quantity = serializer.validated_data.get('quantity', 1)
-
+		#Если позиция уже есть - увеличиваем количество не создавая дубликат
 		item, created = CartItem.objects.get_or_create(
 			cart=cart,
 			product_info=product_info,
 			defaults={'quantity': quantity}
 		)
 		if not created:
-			item.quantity += quantity
-			item.full_clean()
+			new_quantity = item.quantity + quantity
+			if new_quantity > product_info.quantity:
+				return Response(
+					{'quantity': [f'Превышен остаток на складе']},
+					status=status.HTTP_400_BAD_REQUEST,
+				)
+			item.quantity = new_quantity
 			item.save()
 
 		return Response(

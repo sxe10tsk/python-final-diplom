@@ -7,5 +7,6 @@ router = DefaultRouter()
 router.register('order', OrderViewSet, basename='order')
 router.register('shop/orders', ShopOrderViewSet, basename='shop-orders')
 
+
 urlpatterns = [
     path('shop/state', ShopStateView.as_view(), name='shop-state'),] + router.urls
