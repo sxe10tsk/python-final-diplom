@@ -1,13 +1,11 @@
 from django.db import transaction
-from django.db.migrations import serializer
-from rest_framework import generics, status, viewsets, permissions
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cart.models import Cart
-from catalog.models import Shop
 from users.models import Contact
 from .models import Order, OrderItem
 from .serializers import OrderSerializer, ShopOrderSerializer
@@ -71,7 +69,7 @@ class OrderViewSet(viewsets.GenericViewSet):
 				OrderItem.objects.create(
 					order=order,
 					product_info=pi,
-					quantity=pi.quantity,
+					quantity=item.quantity,
 					price=pi.price,      #Фиксация цены на момент заказа
 					shop=pi.shop,)
 				pi.quantity -= item.quantity
@@ -129,10 +127,10 @@ class ShopStateView(APIView):
 	def post(self, request):
 		is_open = request.data.get('is_open')
 		if not isinstance(is_open, bool):
-			return Response({'is_open: [True or False]'}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'is_open': ['True or False']}, status=status.HTTP_400_BAD_REQUEST)
 		shop = request.user.shop
 		shop.is_open = is_open
 		shop.save(update_fields=['is_open'])
-		return Response({'is_open: shop.is_open'}, status=status.HTTP_200_OK)
+		return Response({'is_open': shop.is_open}, status=status.HTTP_200_OK)
 
 

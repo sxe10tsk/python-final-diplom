@@ -30,7 +30,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 		if product_info.quantity < quantity:
 			raise serializers.ValidationError('Недостаточный остаток на складе')
 		if quantity < 1:
-			raise serializers.ValidationError('Невозможно доьавить меньше 1 товара')
+			raise serializers.ValidationError('Невозможно добавить меньше 1 товара')
 
 		return attrs
 

@@ -32,7 +32,7 @@ class Order(models.Model):
 		'users.Contact',
 		on_delete=models.PROTECT, #Защищаем контакт от удаления если на него ссылается заказ
 		related_name='orders',
-		verbose_name='Адресс доставки'
+		verbose_name='Адрес доставки'
 	)
 	status = models.CharField(
 		'Статус заказа',
@@ -80,7 +80,7 @@ class OrderItem(models.Model):
 	)
 	#фиксация магазина на момент заказа
 
-	quantity = models.PositiveIntegerField('колиество')
+	quantity = models.PositiveIntegerField('количество')
 	price = models.DecimalField('Цена на момент заказа', max_digits=10, decimal_places=2)
 	#Фиксация цены на момент заказа
 

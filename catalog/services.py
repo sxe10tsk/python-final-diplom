@@ -21,7 +21,7 @@ def import_goods_from_data(data: dict, shop: Shop | None = None) -> dict:
 		raise ValueError('No shop provided')
 	if 'goods' not in data:
 		raise ValueError('No goods provided')
-	#Валидируем до осуществления транзщакции
+	#Валидируем до осуществления транзакции
 
 	created_count = 0
 	updated_count = 0

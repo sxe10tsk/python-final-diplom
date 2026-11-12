@@ -6,7 +6,7 @@ from .models import Order, OrderItem
 
 class OrderItemSerializer(serializers.ModelSerializer):
 	product_name = serializers.CharField(
-		source='product_info.product_name',
+		source='product_info.product.name',
 		read_only=True
 	)
 	shop_name = serializers.CharField(
@@ -38,7 +38,7 @@ class OrderSerializer(serializers.ModelSerializer):
 	items = OrderItemSerializer(many=True, read_only=True)
 	total_sum = serializers.DecimalField(max_digits=12, decimal_places=2,read_only=True)
 	contact = serializers.PrimaryKeyRelatedField(queryset=Contact.objects.none())
-	status_display = serializers.CharField(source='get_status display', read_only=True)
+	status_display = serializers.CharField(source='get_status_display', read_only=True)
 
 	class Meta:
 		model = Order
@@ -58,7 +58,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class ShopOrderItemSerializer(serializers.ModelSerializer):
 	product_name = serializers.CharField(
-		source='product_info.product_name',
+		source='product_info.product.name',
 		read_only=True
 	)
 	total = serializers.DecimalField(max_digits=12, decimal_places=2,read_only=True)

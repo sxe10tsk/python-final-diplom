@@ -34,7 +34,7 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     """
-    ПОзиции товара в корзине и их количество. Одна позиция на товар
+    Позиции товара в корзине и их количество. Одна позиция на товар
     """
     cart = models.ForeignKey(
         Cart,

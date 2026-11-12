@@ -25,7 +25,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 	def validate(self, attrs):
 		if attrs['password'] != attrs['password_confirmation']:
 			raise serializers.ValidationError('Passwords must match')
-		if attrs.get('user_type') == 'User.UserType.SHOP' and not attrs.get('company'):
+		if attrs.get('user_type') == User.UserType.SHOP and not attrs.get('company'):
 			raise serializers.ValidationError('Company must be provided')
 		return attrs
 
@@ -34,7 +34,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 		password = validated_data.pop('password')
 		user = User(**validated_data)
 		user.set_password(password) #хешируем пароль
-		user.is_active = False #поумолчании до подтверждения email
+		user.is_active = False #по умолчании до подтверждения email
 		user.save()
 		return user
 
@@ -98,6 +98,6 @@ class ContactSerializer(serializers.ModelSerializer):
 			request = self.context.get('request')
 			if request and request.user:
 				Contact.objects.filter(
-					user=request.user, is_default=True,
-				).exclude(pk=self.instance.pk if self.instance else None).update(is_default=False)
+					user=request.user, is_default_adress=True,
+				).exclude(pk=self.instance.pk if self.instance else None).update(is_default_adress=False)
 		return attrs

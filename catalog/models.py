@@ -9,7 +9,7 @@ class Shop(models.Model):
 		related_name='shop',
 		verbose_name='Поставщик'
 	)
-	is_open = models.BooleanField('При ем заказов', default=True)
+	is_open = models.BooleanField('Прием заказов', default=True)
 	filename = models.CharField('Прайс-лист', max_length=255, blank=True)
 
 	def __str__(self):
@@ -85,7 +85,7 @@ class ProductInfo(models.Model):
 
 class ProductParameter(models.Model):
 	"""
-	Разные магазины могут указываать разные характеристики в рамках своего предложения
+	Разные магазины могут указывать разные характеристики в рамках своего предложения
 	"""
 	product_info = models.ForeignKey(
 		ProductInfo,

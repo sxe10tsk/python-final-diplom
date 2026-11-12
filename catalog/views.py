@@ -8,7 +8,6 @@ from django.db.models import Prefetch
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 
-from users.permissions import IsShopOwner
 from .services import import_goods_from_data
 from .models import Category, Shop, Product, ProductInfo
 from .serializers import (CategorySerializer, ShopSerializer, ProductListSerializer, ProductDetailSerializer,ShopUpdateSerializer)
@@ -39,7 +38,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 	ordering = ('id',)
 
 
-	def get_queryset(self): # Для оптимизации чтобы избежать N + 1 запросов
+	def get_queryset(self): # Для оптимизации, чтобы избежать N + 1 запросов
 		qs = Product.objects.select_related('category')
 		if self.action == 'retrieve':
 			qs = qs.prefetch_related(

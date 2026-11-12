@@ -4,7 +4,7 @@ from django.db import models
 
 class UserManager(BaseUserManager):
     """
-    Переопределяем менеджер пользователя, чтобы email был первым аргументов вместое username
+    Переопределяем менеджер пользователя, чтобы email был первым аргументов вместо username
     """
     use_in_migrations = True
 
@@ -78,7 +78,7 @@ class Contact(models.Model):
     building = models.CharField('Корпус', max_length=5, blank=True)
     apartment = models.CharField('Квартира', max_length=5, blank=True)
     phone = models.CharField('Номер телефона', max_length=20)
-    is_default_adress = models.BooleanField('Адресс по умолчанию', default=False)
+    is_default_adress = models.BooleanField('Адрес по умолчанию', default=False)
 
     def __str__(self):
         """

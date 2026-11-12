@@ -1,8 +1,8 @@
 from django.conf import settings
-from django.core.mail import send_mail, message
+from django.core.mail import send_mail
 
 
-#Преобразование позиции в текс для письма
+#Преобразование позиции в текст для письма
 def _format_items(items):
 	lines = []
 	for item in items:
@@ -22,7 +22,7 @@ def send_order_confirmation(order):
 		f'Заказ №{order.pk} успешно оформлен\n\n'
 		f'Состав заказа: {items_text} \n\n'
 		f'Итого к оплате: {order.total_sum} рублей \n\n'
-		f'Адресс доставки: {order.contact}\n\n'
+		f'Адрес доставки: {order.contact}\n\n'
 		f'Ваш контактный телефон: {order.contact.phone}\n\n'
 		f'Статус вашего заказа: {order.get_status_display()}\n\n'
 	)
