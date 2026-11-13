@@ -15,6 +15,6 @@ class CartAdmin(admin.ModelAdmin):
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
 	list_display = ('cart', 'product_info', 'quantity')
-	search_fields = ('cart__user__email', 'product__info__product__name')
+	search_fields = ('cart__user__email', 'product_info__product__name')
 	list_select_related =  ('cart', 'product_info')
 	
